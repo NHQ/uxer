@@ -6,28 +6,51 @@ var shims = require('./shims.js')
 ,   touch = require('./touch.js')
 ,   syncopate = require('./intervals.js')
 ,   generateMatrix = require('./twist.js')
+,   writeWave = require('./writeWave.js')
+,   Buffer = require('buffer').Buffer
+,   webaudio = require('./webaudio.js')
+,   offset = 0
+,   audio = new webkitAudioContext()
+,   sampleRate = audio.sampleRate
+,   duration = 2 * sampleRate  // in samples
+,   source = audio.createBufferSource()
+,   ab = audio.createBuffer(1, duration, sampleRate)
+,   boof = ab.getChannelData(0); //new Float32Array(sampleRate * 2)
 ;
 
-audio = new webkitAudioContext();
-var source = audio.createBufferSource();
+window.AUDIO = audio
 source.connect(audio.destination);
-var xhr = new XMLHttpRequest();
-xhr.open('GET', 'trololo.wav', true);
-xhr.responseType = 'arraybuffer';
-xhr.onload = function(){ 
-  var buffer = audio.createBuffer(this.response, this.response.length);
-/*  audio.decodeAudioData(xhr.response, function(buffer){
-    console.log(buffer)
-    source.buffer = buffer;
-    source.noteOn(0);
-  }, function(e){console.log(e)})
-*/
 
-    source.buffer = buffer;
-    source.noteOn(0);
+
+function wave(t, i){
+
+  return Math.sin(t * Math.PI * 2 * 400)
 
 }
-xhr.send();
+
+var b = webaudio({rate: sampleRate, size: 256, duration: duration + 's'}, wave);
+
+b.on('data', function(buffer, x){
+//  console.log(x, offset, boof.length, buffer.length)
+  boof.set(buffer, offset)
+
+  offset += 256
+
+})
+
+b.on('end', function(){
+
+  console.log('done', boof, ab);
+
+//  var wav = writeWave({data: boof, sampleRate: 8000, channels : 1, bitDepth : 16})
+
+  source.buffer = ab
+  source.noteOn(0);
+
+})
+
+
+b.resume()
 
 shims.disableWindowBounce();
 
@@ -63,10 +86,23 @@ window.addEventListener('sync', function(e){
 })
 
 window.addEventListener('bpm', function(e){
-//  h1.textContent = e.detail.bpm;
+  console.log('bpm', e.detail.bpm);
 })
 
-window.addEventListener('switch', function(e){
-//  console.log(e.detail.switch);
+window.addEventListener('on', function(e){
+  console.log('on');
 })
 
+window.addEventListener('off', function(e){
+  console.log('off');
+})
+
+
+function toArrayBuffer(buffer) {
+    var ab = new ArrayBuffer(buffer.length);
+    var view = new Float32Array(ab);
+    for (var i = 0; i < buffer.length; ++i) {
+        view[i] = buffer[i];
+    }
+    return ab;
+}

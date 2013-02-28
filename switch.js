@@ -4,6 +4,8 @@ module.exports = function(el, gate){
 
   gate = gate || false
 
+  var name = gate ? 'on' : 'off'
+
   if(Modernizr.touch) {
 
     touch.start(el);
@@ -20,7 +22,9 @@ module.exports = function(el, gate){
 
     gate = !gate
 
-    evt = new CustomEvent('switch', {bubbles: true, cancelable: true, detail : {switch: gate }});
+    name = gate ? 'on' : 'off' 
+
+    evt = new CustomEvent(name, {bubbles: true, cancelable: true, detail : {switch: gate }});
 
     this.dispatchEvent(evt);
 

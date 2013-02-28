@@ -1,0 +1,30 @@
+var baudio = require('baudio')
+,   writeWave = require('./writeWave')
+,   sampleRate = 44100
+,   offset = 0
+,   sampleSize = 2 // 16 bits == 2 bytes
+,   bufSize = 256
+,   duration = 2000 // ms
+,   buf = new Buffer(sampleSize * sampleRate * (duration / 1000))
+,   b = baudio({rate: sampleRate, duration: duration, size: bufSize})
+,   tau = Math.PI * 2
+;
+
+b.push(function(t, i){
+
+  return Math.sin(t * tau * 440)
+
+})
+
+b.on('data', function(buffer){
+
+  buffer.copy(buf, offset);
+
+  offset += bufSize
+
+})
+
+b.on('end', function(){
+console.log('done');
+process.exit();
+})

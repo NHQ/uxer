@@ -7,7 +7,7 @@ function syncopate (el){
 
   var start = 0
   ,   s = 0 
-  ,   evt = {}
+  ,   meta = {}
   ,   wto = undefined
   ,   interval = 0
   ,   intervals = []
@@ -21,20 +21,22 @@ function syncopate (el){
 
       intervals.splice(0, intervals.length);
 
+      meta = {}
+
       if(Modernizr.touch) {
 
 	  touch.resume(this);
 
-	  this.addEventListener('touchStart', sync);
+	  this.addEventListener('touchStart', touchStart);
 
-	  this.addEventListener('touchEnd', sync);
+	  this.addEventListener('touchEnd', touchEnd);
 
 
       } else {
 
-	  this.addEventListener('mousedown', sync);
+	  this.addEventListener('mousedown',touchStart);
 
-	  this.addEventListener('mouseup', sync);
+	  this.addEventListener('mouseup', touchEnd);
 
       }
     
@@ -46,28 +48,44 @@ function syncopate (el){
 
 	  touch.pause(this);
 
-	  this.removeEventListener('touchStart', sync);
+	  this.removeEventListener('touchStart', touchStart);
 
-	  this.removeEventListener('touchEnd', sync);
+	  this.removeEventListener('touchEnd', touchEnd);
 
 
       } else {
 
-	  this.removeEventListener('mousedown', sync);
+	  this.removeEventListener('mousedown', touchStart);
 
-	  this.removeEventListener('mouseup', sync);
+	  this.removeEventListener('mouseup', touchEnd);
 
       }
     
   })
 
-  function sync(e){
+  function touchStart(e){
 
     s = new Date().getTime() - start
 
-    intervals.push(s);
+    var index = intervals.push([s]) - 1;
 
-    evt = new CustomEvent('sync', { cancelable: true, bubbles: true, detail: {intervals: intervals}});
+    var evt = new CustomEvent('sync', { cancelable: true, bubbles: true, detail: {intervals: intervals}});
+
+    this.dispatchEvent(evt);
+
+    meta[e.detail.id] = index
+
+  };
+
+  function touchEnd(e){
+
+    s = new Date().getTime() - start
+
+    var index = meta[e.detail.id]
+
+    intervals[index].push(s)   
+
+    var evt = new CustomEvent('sync', { cancelable: true, bubbles: true, detail: {intervals: intervals}});
 
     this.dispatchEvent(evt);
 
