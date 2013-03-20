@@ -6,51 +6,9 @@ var shims = require('./shims.js')
 ,   touch = require('./touch.js')
 ,   syncopate = require('./intervals.js')
 ,   generateMatrix = require('./twist.js')
-,   writeWave = require('./writeWave.js')
 ,   Buffer = require('buffer').Buffer
-,   webaudio = require('./webaudio.js')
-,   offset = 0
-,   audio = new webkitAudioContext()
-,   sampleRate = audio.sampleRate
-,   duration = 2 * sampleRate  // in samples
-,   source = audio.createBufferSource()
-,   ab = audio.createBuffer(1, duration, sampleRate)
-,   boof = ab.getChannelData(0); //new Float32Array(sampleRate * 2)
 ;
 
-window.AUDIO = audio
-source.connect(audio.destination);
-
-
-function wave(t, i){
-
-  return Math.sin(t * Math.PI * 2 * 400)
-
-}
-
-var b = webaudio({rate: sampleRate, size: 256, duration: duration + 's'}, wave);
-
-b.on('data', function(buffer, x){
-//  console.log(x, offset, boof.length, buffer.length)
-  boof.set(buffer, offset)
-
-  offset += 256
-
-})
-
-b.on('end', function(){
-
-  console.log('done', boof, ab);
-
-//  var wav = writeWave({data: boof, sampleRate: 8000, channels : 1, bitDepth : 16})
-
-  source.buffer = ab
-  source.noteOn(0);
-
-})
-
-
-b.resume()
 
 shims.disableWindowBounce();
 
@@ -97,6 +55,15 @@ window.addEventListener('off', function(e){
   console.log('off');
 })
 
+function pluck (t, freq, duration, steps) {
+    var n = duration;
+    var scalar = Math.max(0, 0.95 - (t * n) / ((t * n) + 1));
+    var sum = 0;
+    for (var i = 0; i < steps; i++) {
+        sum += Math.sin(tau * t * (freq + i * freq));
+    }
+    return scalar * sum / 6;
+}
 
 function toArrayBuffer(buffer) {
     var ab = new ArrayBuffer(buffer.length);

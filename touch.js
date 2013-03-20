@@ -23,7 +23,7 @@ function touch(){
 
 touch.prototype.start = touch.prototype.listen = function(el){
 
-    if(!el.touch_id) el.touch_id = uuid.v1();
+    if(!el.touch_id) el.touch_id = ('function' == typeof uuid.v1) ? uuid.v1() : uuid();
 
     this.elements.push(el);
 
