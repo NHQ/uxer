@@ -1,5 +1,4 @@
-var touchy = require('./touchy.js')
-,   touch = require('./touch.js')
+var touch = require('touchdown')
 ;
 
 module.exports = function(el){
@@ -12,39 +11,32 @@ module.exports = function(el){
   ,   bpm = 0
   ;
 
-  if(Modernizr.touch) {
 
-    touch.start(el);
+  touch.start(el);
 
-    el.addEventListener('touchStart', bpmTest) 
+  el.addEventListener('startBPM', function(e){
 
-  } else {
+      start = 0;
 
-    el.addEventListener('mousedown', bpmTest);
+      intervals = 0;
 
-  }
+      meta = {}
 
-  function sincewhen(e){
+	  touch.resume(this);
+
+	  el.removeEventListener('touchdown', bpmTest) 
+
+	  el.addEventListener('touchdown', bpmTest) 
     
-  }
+  });
 
   function bpmTest(e){
     s = new Date().getTime();
-    if(start == 0) {
-      start = s;
-      window.clearTimeout(wto);
-      return
-    }
-    else {
-      interval = s - start
-      bpm = Number(60 / (interval / 1000)).toFixed(2);
-      start = s;
-      evt = new CustomEvent('bpm', { cancelable: true, bubbles: true, detail : { interval: interval, bpm: bpm }});
-      this.dispatchEvent(evt);
-      wto = window.setTimeout(function(){
-        start = 0;
-      }, 10000);
-    }
+    interval = s - start
+    bpm = start ? Number(60 / (interval / 1000)).toFixed(2) : 0
+    start = s;
+    evt = new CustomEvent('bpm', { cancelable: true, bubbles: true, detail : { interval: interval, bpm: bpm }});
+    this.dispatchEvent(evt);
   };
 
   return el

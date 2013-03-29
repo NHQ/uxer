@@ -1,13 +1,18 @@
 module.exports = function(el, param){
 
     var propValue = window.getComputedStyle(el).getPropertyCSSValue(param)
+		if(!propValue) throw new Error("No prop valueValue. Is the element appended to the document yet?")
+		if(!propValue) return false
+    var valueType = '';
+		for(var b in propValue.__proto__){
+			if(propValue.__proto__[b] == propValue.cssValueType) {
+				valueType = b;
+				break;
+			}
+		};
 
-    var valueType = propValue.__proto__.constructor.name
-    ;
+
     switch(valueType.toLowerCase()){
-    case 'cssvalue':
-	return {type: 'cssValue', value : {unit: '', type: propValue.cssValueType, val: propValue.cssText}};
-	break;
     case 'cssvaluelist':
 	var l = propValue.length;
         var obj = {};
@@ -20,6 +25,9 @@ module.exports = function(el, param){
 	break;
     case 'svgpaint':
 	return {type: 'SVGPaint', value : CSSGetPrimitiveValue(propValue)};
+	break;
+	 default:
+	return {type: 'cssValue', primitive: CSSGetPrimitiveValue(propValue), value : {unit: '', type: propValue.cssValueType, val: propValue.cssText}};
 	break;
     }
 

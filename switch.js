@@ -1,4 +1,4 @@
-var touch = require('./touch.js');
+var touch = require('touchdown');
 
 module.exports = function(el, gate){
 
@@ -6,17 +6,9 @@ module.exports = function(el, gate){
 
   var name = gate ? 'on' : 'off'
 
-  if(Modernizr.touch) {
+  touch.start(el);
 
-    touch.start(el);
-
-    el.addEventListener('touchStart', Switch) 
-
-  } else {
-
-    el.addEventListener('mousedown', Switch);
-
-  }
+  el.addEventListener('touchdown', Switch);
 
   function Switch(e){
 

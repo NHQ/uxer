@@ -1,4 +1,4 @@
-var touch = require('./touch.js')
+var touch = require('touchdown')
 ;
 
 module.exports = syncopate
@@ -15,7 +15,7 @@ function syncopate (el){
 
   touch.register(el);
 
-  el.addEventListener('syncStart', function(e){
+  el.addEventListener('startSync', function(e){
 
       start = new Date().getTime();
 
@@ -23,43 +23,25 @@ function syncopate (el){
 
       meta = {}
 
-      if(Modernizr.touch) {
-
 	  touch.resume(this);
+	
+	  this.removeEventListener('touchdown', touchStart);
 
-	  this.addEventListener('touchStart', touchStart);
+	  this.removeEventListener('liftoff', touchEnd);
 
-	  this.addEventListener('touchEnd', touchEnd);
+	  this.addEventListener('touchdown', touchStart);
 
-
-      } else {
-
-	  this.addEventListener('mousedown',touchStart);
-
-	  this.addEventListener('mouseup', touchEnd);
-
-      }
+	  this.addEventListener('liftoff', touchEnd);
     
   })
 
   el.addEventListener('syncStop', function(e){
 
-      if(Modernizr.touch) {
-
 	  touch.pause(this);
 
-	  this.removeEventListener('touchStart', touchStart);
+	  this.removeEventListener('touchdown', touchStart);
 
-	  this.removeEventListener('touchEnd', touchEnd);
-
-
-      } else {
-
-	  this.removeEventListener('mousedown', touchStart);
-
-	  this.removeEventListener('mouseup', touchEnd);
-
-      }
+	  this.removeEventListener('liftoff', touchEnd);
     
   })
 

@@ -3,22 +3,16 @@ var shims = require('./shims.js')
 ,   Switch = require('./switch.js')
 ,   getCSS = require('./getCSS.js')
 ,   findPos = require('./findPosition.js')
-,   touch = require('./touch.js')
 ,   syncopate = require('./intervals.js')
 ,   generateMatrix = require('./twist.js')
 ,   Buffer = require('buffer').Buffer
+,   spin = require('./spin.js')
 ;
 
 
 shims.disableWindowBounce();
 
-touch.handleMouse(true); 
-
 var tap = document.createElement('div');
-
-bpm(tap);
-syncopate(tap);
-Switch(tap, false); // beginning val
 
 h1 = document.createElement('h1');
 h1.id = "h1";
@@ -34,8 +28,14 @@ tap.style.border = '5px solid green';
 tap.id = 'tap';
 document.body.appendChild(tap);
 
+spin(tap);
+bpm(tap);
+syncopate(tap);
+Switch(tap, false); // beginning val
 
-var evt = new CustomEvent('syncStart', {cancelable: false, bubbles: false});
+var evt = new CustomEvent('startSync', {cancelable: false, bubbles: false});
+tap.dispatchEvent(evt);
+var evt = new CustomEvent('startBPM', {cancelable: false, bubbles: false});
 tap.dispatchEvent(evt);
 
 
@@ -48,11 +48,11 @@ window.addEventListener('bpm', function(e){
 })
 
 window.addEventListener('on', function(e){
-  console.log('on');
+//  console.log('on');
 })
 
 window.addEventListener('off', function(e){
-  console.log('off');
+//  console.log('off');
 })
 
 function pluck (t, freq, duration, steps) {

@@ -1,4 +1,4 @@
-var touch = require('./touch.js')
+var touch = require('touchdown')
 
 module.exports = twist
 
