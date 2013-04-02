@@ -4,7 +4,7 @@ var bpm = require('./bpm')
 ,   getCSS = require('./getCSS')
 ,   center = require('./center')
 ,   uuid = require('./uuid')
-,   onoff = require('./Switch')
+,   onoff = require('./switch')
 ;
 
 module.exports = {
