@@ -4,12 +4,14 @@ var bpm = require('./bpm')
 ,   getCSS = require('./getCSS')
 ,   center = require('./center')
 ,   uuid = require('./uuid')
+,   onoff = require('./Switch')
 ;
 
 module.exports = {
   bpm : bpm,
   intervals : intervals,
-  spin: sping,
+  spin: spin,
+  onoff : 
   getCSS : getCSS,
   center: center,
   uuid : uuid
