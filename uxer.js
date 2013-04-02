@@ -11,7 +11,7 @@ module.exports = {
   bpm : bpm,
   intervals : intervals,
   spin: spin,
-  onoff : 
+  onoff : onoff,
   getCSS : getCSS,
   center: center,
   uuid : uuid
