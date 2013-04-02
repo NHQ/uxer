@@ -5,146 +5,104 @@ var events = require('touchdown')
 
 module.exports = function(el){
 
-	el.touchdown = [];
+    el.touchdown = [];
 
-	var w = getCSS(el, 'width').primitive.val;
-	var h = getCSS(el, 'height').primitive.val;	
-	var p = findPos(el)
-	,   clockwise = undefined
-	,   degree = 0
-	,   pad = 25
-	;
-	el.center = [p[0] + (w/2), p[1] + (h/2)]
+    var clockswise = [];
+    var quadrants = [];
+    var points = [];
+    var w = getCSS(el, 'width').primitive.val;
+    var h = getCSS(el, 'height').primitive.val;	
+    var p = findPos(el)
+    ,   SWITCH = false
+    ,   LEFT = false, TOP = false
+    ,   clockwise = undefined
+    ,   quad = undefined
+    ,   degree = 0
+    ,   pad = 25
+    ,   lastPoint = [];
+    ;
 
-  events.start(el);
+    el.center = [p[0] + (w/2), p[1] + (h/2)]
 
-  el.addEventListener('touchdown', touchdown)
-  el.addEventListener('vector', vectorChange)
-  el.addEventListener('liftoff', liftoff)
+    el.zero = [el.center[0] + w / 2, el.center[1]]
+    el._b = el.center[1] - ( h / 2 ) ;
+    events.start(el);
 
-	function touchdown(e){
-		var event = e.detail;
-		var el = this;
-		el.touchdown = [e.detail.x, e.detail.y];
-		var evt = new CustomEvent('spinstart', { cancelable: true, bubbles: true, detail : event});
-    this.dispatchEvent(evt);
+    el.addEventListener('touchdown', touchdown)
+    el.addEventListener('deltavector', vectorChange)
+    el.addEventListener('liftoff', vectorChange)
 
-	}
+    function touchdown(e){
+	var event = e.detail;
+	var el = this;
+
+	var point = [e.detail.x, e.detail.y]
+        lastPoint = point.slice(0);
+	var a = distance(el.zero, point);
+	var b = distance(el.zero, el.center);
+	var c = distance(point, el.center);
+	var angle = 360 - getAngle(a,b,c);
+        el.lastAngle = angle;
+	el.touchdown = [e.detail.x, e.detail.y];
+	var evt = new CustomEvent('spinstart', { cancelable: true, bubbles: true, detail : event});
+	evt.dxcenter = distance(el.center, point);
+	this.dispatchEvent(evt);
+	quad = getQuadrant(point, el.center)
+    }
+    
+    function vectorChange(e){
 	
-	function vectorChange(e){
-		var event = e.detail;
-		var el = this;
-		var vector = el.vector = event.vector;
-    var point = [e.detail.x, e.detail.y]
-		var a = distance(event.lastPoint, point);
-		var b = distance(event.lastPoint, el.center);
-		var c = distance(point, el.center);
-		if(point[1] < el.center[1] - pad){
-			if(vector[0] < 0){
-				clockwise = -1
-			}
-			else if (vector[0] > 0){
-				clockwise = 1
-			}
-			else if(vector[0] == 0){
-				if(point[0] < el.center[0]){
-					if(vector[1] > 0){
-						clockwise = -1
-					}
-					else{
-						clockwise = 1
-					}
-				}
-				else 	if(point[0] > el.center[0]){
-					if(vector[1] > 0){
-						clockwise = 1
-					}
-					else{
-						clockwise = -1
-					}
-				}
-			}
-		}
-		else if(point[1] > el.center[1] + pad){
-			if(vector[0] < 0){
-				clockwise = 1
-			}
-			else if(vector[0] > 0){
-				clockwise = -1
-			}
-			else{
-				if(point[0] < el.center[0]){
-					if(vector[1] > 0){
-						clockwise = -1
-					}
-					else{
-						clockwise = 1
-					}
-				}
-				else{
-					if(vector[1] > 0){
-						clockwise = 1
-					}
-					else{
-						clockwise = -1
-					}
-				}
-			}	
-		}
-		else{
-			if(point[0] < el.center[0]){
-				if(vector[1] > 0){
-					clockwise = -1
-				}
-				else if(vector[1] < 0){
-					clockwise = 1
-				}
-				else{
-					if(vector[0] < el.center[0]){
-						if(vector[0] > 0){
-							clockwise = 1
-						}
-						else{
-							clockwise = -1
-						}
-					}
-					else{
-						if(vector[0] < 0){
-							clockwise = -1
-						}
-						else{
-							clockwise = 1
-						}
-					}
-				}
-			}
-			else{
-				if(vector[1] > 0){
-					clockwise = 1
-				}
-				else{
-					clockwise = -1
-				}
-			}
-		}
-		
-		degree += getAngle(a,b,c) * clockwise
-				
-		var evt = new CustomEvent('spin', { cancelable: true, bubbles: true, detail : event});
-		
-		evt.detail.degree = degree;
-		evt.detail.clockwise = clockwise
-		evt.detail.degreeChange = getAngle(a,b,c) * clockwise
-    this.dispatchEvent(evt);
-	}
-	
-	function liftoff(e){
-		var event = e.detail;
-		var el = this;
-		var evt = new CustomEvent('spinstop', { cancelable: true, bubbles: true, detail : event});
-    this.dispatchEvent(evt);
-	}
+	var event = e.detail;
+	var el = this;
 
+	var point = [e.detail.x, e.detail.y]
+	var lq = quad;
+        if(distance(point, el.center)<5) return;
+
+        quad = getQuadrant(point, el.center);
+
+	var a = distance(el.zero, point);
+	var b = distance(el.zero, el.center);
+	var c = distance(point, el.center);
+	var angle = (quad==1||quad==2) ?  360 - getAngle(a,b,c) : getAngle(a,b,c);
+
+        var la = el.lastAngle;
+
+        el.clockwise = (angle - el.lastAngle > 0) ? 1 : -1;
+
+        if(!(quad==lq)){// new quadrant
+	    if((lq==1&&quad==3)||(lq==3&&quad==1)){ // crossed the zero line
+
+		var r = clockswise.slice(0,5).reduce(function(acc,i){
+		    return acc+=i;
+		},0)
+		if(r<0) el.clockwise = -1
+		else if(r>0) el.clockwise = 1;
+		else el.clockwise = clockswise[0];
+	    };
+	};
+
+	clockswise.unshift(el.clockwise);
+
+	var a = distance(lastPoint, point);
+	var b = distance(lastPoint, el.center);
+	var c = distance(point, el.center);
+
+	degree += getAngle(a,b,c) * el.clockwise;
+	
+	var evt = new CustomEvent('spin', { cancelable: true, bubbles: true, detail : event});
+	el.lastAngle = angle;
+	evt.detail.degree = degree;
+	evt.detail.clockwise = el.clockwise;
+	evt.detail.lastPoint = lastPoint.slice(0);
+	lastPoint = point.slice(0);	
+	evt.detail.dxcenter = distance(el.center, point);
+	evt.detail.delta = getAngle(a,b,c) * el.clockwise
+
+        this.dispatchEvent(evt);
+
+    }
+    
 }
 
 function getAngle(a,b,c){ // solve for angle A in degrees
@@ -161,4 +119,15 @@ function distance(p1, p2){
 		Math.pow(p2[0] - p1[0], 2) +
 		Math.pow(p2[1] - p1[1], 2)
 	)
-}
+};
+
+function getQuadrant(point, center){
+  if(point[0] < center[0]){
+    if(point[1] < center[1]) return 2
+    else return 4
+  }
+  else{
+    if(point[1] < center[1]) return 1
+    else return 3 
+  }
+};
