@@ -1,20 +1,23 @@
 var getCSS = require('./getCSS');
 
 module.exports = function(el){
-	
-	var w = getCSS(el, 'width').value.val
-	,   h = getCSS(el, 'height').value.val
-  ;
- 
-  var pw = getCSS(el.parentElement, 'width').value.val
-  ,   ph = getCSS(el.parentElement, 'height').value.val
-  ;
+    
+    el.style['-webkit-box-sizing'] = 'border-box'
 
-  var dw = pw - w, dh = ph - h;
+    var w = getCSS(el, 'width').primitive.val
+    ,   h = getCSS(el, 'height').primitive.val
+    ;
+    
+    var pw = getCSS(el.parentElement, 'width').primitive.val
+    ,   ph = getCSS(el.parentElement, 'height').primitive.val
+    ;
 
-	el.style.position = 'absolute';
-  el.style['top'] = dh/2 + 'px';
-  el.style['left'] = dw/2 + 'px';
+    var dw = pw - w
+    ,   dh = ph - h
+    ;
+    
+    el.style.position = 'absolute';
+    el.style['top'] = dh/2 + 'px';
+    el.style['left'] = dw/2 + 'px';
 
-  console.log(dw, dh, pw, ph, w, h)
 }
