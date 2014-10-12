@@ -4,8 +4,6 @@ module.exports = function(el, gate){
 
   gate = gate || false
 
-  var name = gate ? 'on' : 'off'
-
   touch.start(el);
 
   el.addEventListener('touchdown', Switch);
@@ -14,9 +12,7 @@ module.exports = function(el, gate){
 
     gate = !gate
 
-    name = gate ? 'on' : 'off' 
-
-    evt = new CustomEvent(name, {bubbles: true, cancelable: true, detail : {switch: gate }});
+    evt = new CustomEvent('switch', {bubbles: true, cancelable: true, detail : gate });
 
     this.dispatchEvent(evt);
 

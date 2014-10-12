@@ -1,4 +1,4 @@
-var events = require('../touchdown')
+var events = require('touchdown')
 ,   findPos = require('./findPosition')
 ,   getCSS = require('./getCSS')
 ;

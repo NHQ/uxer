@@ -13,5 +13,8 @@
   "author": "johhnyscript.us",
   "license": "MIT BSD MOUSE",
   "readmeFilename": "README.md",
-  "gitHead": "890b1788dcf2dfe9f806f0f10f0679d33e62cf49"
+  "gitHead": "890b1788dcf2dfe9f806f0f10f0679d33e62cf49",
+  "dependencies": {
+    "touchdown": "^5.5.0"
+  }
 }

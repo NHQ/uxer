@@ -4,11 +4,12 @@ module.exports = function(el, param){
 		if(!propValue) throw new Error("No prop valueValue. Is the element appended to the document yet?")
 		if(!propValue) return false
     var valueType = '';
-		for(var b in propValue.__proto__){
-			if(propValue.__proto__[b] == propValue.cssValueType) {
+    for(var b in propValue.__proto__){
+			try{
+      if(propValue.__proto__[b] == propValue.cssValueType) {
 				valueType = b;
 				break;
-			}
+			}}catch(err){console.log(param, propValue.cssValueType, b)}
 		};
 
 
