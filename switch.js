@@ -12,7 +12,7 @@ module.exports = function(el, gate){
 
     gate = !gate
 
-    evt = new CustomEvent('switch', {bubbles: true, cancelable: true, detail : gate });
+    var evt = new CustomEvent('switch', {bubbles: true, cancelable: true, detail : gate });
 
     this.dispatchEvent(evt);
 
