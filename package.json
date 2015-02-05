@@ -1,6 +1,6 @@
 {
   "name": "uxer",
-  "version": "4.1.0",
+  "version": "4.2.0",
   "description": "library of user interaction modules, under construction",
   "main": "uxer.js",
   "scripts": {
