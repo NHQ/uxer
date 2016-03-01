@@ -12,6 +12,7 @@ module.exports = function(el, gate, cb){
   touch.start(el);
 
   el.addEventListener('touchdown', Switch);
+  el.addEventListener('liftoff', Switch);
 
   function Switch(e){
 

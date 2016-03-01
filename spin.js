@@ -10,8 +10,8 @@ module.exports = function(el){
     var clockswise = [];
     var quadrants = [];
     var points = [];
-    var w = getCSS(el, 'width').primitive.val;
-    var h = getCSS(el, 'height').primitive.val;	
+    var w = parseInt(getCSS(el, 'width'));
+    var h = w// parseInt(el, 'height');	
 
     var p = findPos(el)
     ,   SWITCH = false
@@ -24,7 +24,7 @@ module.exports = function(el){
     ;
 
     el.center = [p[0] + (w/2), p[1] + (h/2)]
-
+console.log(el.center)
     el.zero = [el.center[0] + w / 2, el.center[1]]
     el._b = el.center[1] - ( h / 2 ) ;
     events.start(el);
@@ -61,7 +61,7 @@ module.exports = function(el){
         if(distance(point, el.center)<5) return;
 
         quad = getQuadrant(point, el.center);
-
+console.log(el.center)
 	var a = distance(el.zero, point);
 	var b = distance(el.zero, el.center);
 	var c = distance(point, el.center);

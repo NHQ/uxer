@@ -1,10 +1,11 @@
 var touch = require('touchdown')
-;
 
-module.exports = function(el){
 
-  var start = 0
+module.exports = function(el, cb){
+
+  var start = undefined 
   ,   s = 0 
+  ,   last = 0
   ,   evt = {}
   ,   wto = undefined
   ,   interval = 0
@@ -14,29 +15,32 @@ module.exports = function(el){
 
   touch.start(el);
 
-  el.addEventListener('startBPM', function(e){
 
-      start = 0;
-
-      intervals = 0;
-
-      meta = {}
+    var meta = {}
 
 	  touch.resume(this);
 
-	  el.removeEventListener('touchdown', bpmTest) 
-
 	  el.addEventListener('touchdown', bpmTest) 
     
-  });
+  var timeout = null
 
   function bpmTest(e){
     s = new Date().getTime();
+    if(!start) {
+      start = s
+    }
+    clearTimeout(timeout)    
+    timeout = setTimeout(function(){
+      start = undefined
+    }, 3000)
     interval = s - start
     bpm = start ? Number(60 / (interval / 1000)).toFixed(2) : 0
     start = s;
-    evt = new CustomEvent('bpm', { cancelable: true, bubbles: true, detail : { interval: interval, bpm: bpm }});
-    this.dispatchEvent(evt);
+    if(cb) cb(bpm, interval)
+    else{
+      evt = new CustomEvent('bpm', { cancelable: true, bubbles: true, detail : { interval: interval, bpm: bpm }});
+      this.dispatchEvent(evt);
+    }
   };
 
   return el

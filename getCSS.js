@@ -1,7 +1,7 @@
 module.exports = function(el, param){
-
-    var propValue = window.getComputedStyle(el).getPropertyCSSValue(param)
-		if(!propValue) throw new Error("No prop valueValue. Is the element appended to the document yet?")
+    var propValue = window.getComputedStyle(el).getPropertyValue(param)
+		return propValue;
+    if(!propValue) throw new Error("No prop valueValue. Is the element appended to the document yet?")
 		if(!propValue) return false
     var valueType = '';
     for(var b in propValue.__proto__){
