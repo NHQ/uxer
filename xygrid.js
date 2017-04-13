@@ -1,7 +1,7 @@
-var touchdown = require('../touchdown')
+var touchdown = require('touchdown')
 var findPos = require('./findPosition')
 
-module.exports = function(el, cb){
+module.exports = function(el, cb, point){
 
   cb = cb || function(){}
 
@@ -32,6 +32,7 @@ module.exports = function(el, cb){
     return last 
   }
 
+  //if(point) cb(point, [point[0] * w, (h - point[1]) * h])
 
   return el
 
