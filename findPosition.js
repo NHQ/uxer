@@ -11,7 +11,7 @@ module.exports = function(obj){
       curleft += obj.offsetLeft;
       
       curtop += obj.offsetTop;
-
+      
     } while (obj = obj.parentElement);
 
   }
